@@ -1,43 +1,109 @@
+//import { useRecoilState, useRecoilValue } from 'recoil'; // 전역 상태관리
+//import { userState } from '../states/userState.js'; // 전역 상태관리
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
+import { useNavigate } from "react-router-dom";
 import ProfileFrame from "../assets/ProfileFrame.png";
 import ProfileEx from "../assets/ProfileEx.png";
 import CoinIcn from "../assets/CoinIcn.png";
-import api from "../api.js"; // axios 인스턴스
+import SettingIcn from "../assets/SettingIcn.png";
+import ProfileIcn from "../assets/ProfileIcn.png";
+import api from "../api/api.js";
 
-export default function Header({ maxPoints = 100 }) {
+const Header = forwardRef(function Header(_, ref) {
+  //console.log(userState)
+  //const [user, setUser] = useRecoilState(userState);  TODO: 상태관리 Recoil 에러 해결
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [animatedPoints, setAnimatedPoints] = useState(0); // 포인트 애니메이션 값
 
+  const fetchUser = async () => {
+    try {
+      const res = await api.get("/v1/members");
+      console.log("사용자 정보:", res.data.data);
+      setUser(res.data.data);
+    } catch (err) {
+      console.error("사용자 정보 조회 실패:", err);
+    }
+  };
+
+  // ✅ 컴포넌트가 처음 마운트될 때 실행
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await api.get("/v1/members");
-        console.log("사용자 정보:", res.data);
-        setUser(res.data.data);
-      } catch (err) {
-        console.error("사용자 정보 조회 실패:", err);
-      }
-    };
-
     fetchUser();
   }, []);
 
+  // ✅ 부모에서 ref.current.fetchUser() 호출 가능
+  useImperativeHandle(ref, () => ({
+    refreshUser: fetchUser,
+  }));
+
+  // 🔥 포인트 애니메이션 처리
+  useEffect(() => {
+    if (!user) return;
+    let start = animatedPoints;
+    let end = user.point ?? 0;
+    if (start === end) return;
+
+    let startTime = null;
+    const duration = 800; // 애니메이션 시간(ms)
+
+    const step = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const currentValue = Math.floor(start + (end - start) * progress);
+      setAnimatedPoints(currentValue);
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+
+    requestAnimationFrame(step);
+  }, [user]);
+
   if (!user) return null; // 데이터 로딩 중일 때 아무것도 렌더링 안 함
 
-  const points = user.point || 0;
-  const level = user.level || 1;
-  const nickname = user.nickname || "사용자";
-  const progress = Math.min(points / maxPoints, 1) * 100;
-  const profileImg = user.picture;
+  //  사용자 관련 정보 추출
+  //const points = user?.point ?? 0;
+  const points = animatedPoints; // ← 여기서 애니메이션된 값 사용
+  const level = user?.level ?? 1;
+  const nickname = user?.nickname ?? "사용자";
+  const profileImg = user?.picture ?? ProfileEx;
+  
+  // 레벨업에 필요한 XP 계산
+  const getRequiredXP = (level) => {
+    if (level === 1) return 10;
+    return Math.round(10 + 1.6 * (level - 1));
+  };
+
+  // 레벨 바 계산용
+  const currentXP = points;
+  const nextLevelXP = getRequiredXP(level); // 다음 레벨까지 필요한 XP
+  const progressPercent = Math.min((currentXP / nextLevelXP) * 100, 100);
+
 
   return (
     <HeaderWrapper>
       <HeaderBar>
+        {/* TODO: 애니메이션 테스트코드.. 나중에 진짜 API로 잘되는지 확인한 후 삭제할것
+        <button
+          onClick={() =>
+            setUser((prev) => ({
+              ...prev,
+              point: (prev?.point ?? 0) + 100,
+            }))
+          }
+        >
+          포인트 +100 테스트
+        </button>*/}
         {/* 레벨 텍스트 */}
         <LevelText>LV. {level}</LevelText>
 
         {/* 닉네임 표시 */}
         <NicknameText>{nickname}</NicknameText>
+
+        {/* 설정 아이콘 표시 */}
+        <SettingIcon src={SettingIcn} alt="setting" />
 
         {/* 진행도 바 + 포인트 박스 */}
         <ProgressContainer>
@@ -65,7 +131,7 @@ export default function Header({ maxPoints = 100 }) {
               <rect
                 x="9"
                 y="6"
-                width={(180 * points) / maxPoints}
+                width={(180 * progressPercent) / 100}
                 height="9"
                 rx="4.5"
                 fill="url(#paint0_linear)"
@@ -130,10 +196,14 @@ export default function Header({ maxPoints = 100 }) {
           <ProfileFrameImg src={ProfileFrame} alt="frame" />
           <ProfileImg src={ProfileEx} alt="profile" />
         </ProfileWrapper>
+
+        {/* 프로필 아이콘 */}
+        <ProfileIcon src={ProfileIcn} alt="profile icon" onClick={() => navigate("/my-page")} />
       </HeaderBar>
     </HeaderWrapper>
   );
-}
+});
+export default Header;
 
 // Styled Components (기존과 동일)
 const HeaderWrapper = styled.div`position: fixed; z-index:99999;`;
@@ -174,6 +244,23 @@ const NicknameText = styled.div`
   font-size: 16px;
   font-weight: 800;
   line-height: 22px;
+`;
+const SettingIcon = styled.img`
+  position: absolute;
+  margin-top: 52px;
+  margin-left: 350px;
+  cursor: pointer;
+  width: 29.855px;
+  height: 33.464px;
+
+  /* 부드러운 변환 */
+  transition: transform 0.2s ease;
+
+  /* 호버/포커스 시 커지기 */
+  &:hover,
+  &:focus-visible {
+    transform: scale(1.06);
+  }
 `;
 const ProgressContainer = styled.div`
   position: absolute;
@@ -234,4 +321,22 @@ const ProfileImg = styled.img`
   border-radius: 50%;
   transform: translate(-50%, -50%);
   object-fit: cover;
+`;
+const ProfileIcon = styled.img`
+  position: absolute;
+  top: 125%;
+  left: 17%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+
+  /* 부드러운 변환 */
+  transition: transform 0.2s ease;
+
+  /* 호버/포커스 시 커지기 */
+  &:hover,
+  &:focus-visible {
+    transform: scale(1.06);
+  }
+  
 `;

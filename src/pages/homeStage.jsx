@@ -1,36 +1,34 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import GotoFarmBtn from '../assets/GotoFarmBtn.png';
+import CoinIcn from '../assets/CoinIcn.png';
 
 import Header from '../components/header.jsx';
 import StageScroll from '../components/stageScroll.jsx';
 import ChallengeModal from '../components/challengeModal.jsx';
 import HomeMenuButton from "../components/homeMenuBtn.jsx";
+import Modal from '../components/modal.jsx';
 import RewardBar from '../components/rewardBar.jsx';
 import Footer from '../components/footer.jsx';
-import api from '../api.js';
+import api from '../api/api.js';
 
 export default function HomeStage() {
   const navigator = useNavigate();
-  const [stages, setStages] = useState([]);
-  const [characterStage, setCharacterStage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [challenges, setChallenges] = useState([]);
-  const [completedCount, setCompletedCount] = useState(0); // ← API에서 바로 받아옴
-  const [selectedStage, setSelectedStage] = useState(null);
+  const headerRef = useRef();
 
-  const mapChallengeStatusToStage = (challengeStatus) => {
-    switch(challengeStatus) {
-      case "ACTIVE": return "before";
-      case "PENDING_APPROVAL": return "waiting";
-      case "COMPLETED": return "approved";
-      case "REJECTED": return "rejected";
-      default: return "before";
-    }
-  };
+  const [stages, setStages] = useState([]); // 스테이지 상태 관리용
+  const [characterStage, setCharacterStage] = useState(1); // 현재 캐릭터의 스테이지 위치
+  const [completedCount, setCompletedCount] = useState(0); // 승인된 챌린지 개수
+  const [challenges, setChallenges] = useState([]); 
+  const [selectedStage, setSelectedStage] = useState(null);  // 현재 시작한 스테이지(TODO: 꼭 필요한지 점검)
+
+  const [loading, setLoading] = useState(true);  // 로딩 여부
+  const [challengeModalOpen, setChallengeModalOpen] = useState(false); // 챌린지 모달
+  const [rewardModalOpen, setRewardModalOpen] = useState(false); // 일일 3회 보상 모달
+  const [doneModalOpen, setDoneModalOpen] = useState(false); // 오늘의 스테이지 모두 완료 모달
+
 
   useEffect(() => {
     const fetchChallenges = async () => {
@@ -40,26 +38,47 @@ export default function HomeStage() {
 
         setCharacterStage(data.currentStage);
         setCompletedCount(data.completedCount);
+        setChallenges(data.dailyChallengesResDtos);
 
-        const stageData = data.dailyChallengesResDtos.map((challenge, idx) => {
-          let status = "before";
+        // 스테이지 상태는 백엔드에서 별도 배열로 내려준다고 가정
+        const mapBackendStatus = (backendStatus) => {
+          switch (backendStatus) {
+            case "pending": return "waiting";
+            case "active": return "before";
+            case "approved": return "approved";
+            case "rejected": return "rejected";
+            default: return "before";
+          }
+        };
 
-          if (idx < data.completedCount) {
-            status = "approved"; // 이미 완료된 스테이지
-          } else if (idx >= data.completedCount && idx < data.currentStage) {
-            status = "waiting"; // 현재 진행중인 스테이지
+        // 오늘 시작할 스테이지 기준으로 앞으로 10개 만들기
+        const activeCount = data.stageStatus.filter(s => s === "active").length;
+        const startStage = data.currentStage - (5-activeCount);
+
+        const totalStages = 10;
+        const stageData = Array.from({ length: totalStages }, (_, idx) => {
+          const backendIdx = idx; // 오늘 백엔드에서 오는 stageStatus는 5개
+          let status;
+
+          if (backendIdx < data.stageStatus.length) {
+            status = mapBackendStatus(data.stageStatus[backendIdx]);
           } else {
-            status = "before"; // 아직 진행 전 스테이지
+            // 나머지 스테이지는 아직 제출 안 한 것으로 가정 → before
+            status = "before";
           }
 
           return {
-            index: challenge.dailyMemberChallengeId,
+            index: startStage + idx, // 실제 스테이지 번호
             status,
           };
         });
 
         setStages(stageData);
-        setChallenges(data.dailyChallengesResDtos);
+
+        // 오늘 모든 스테이지 도전 완료 체크
+        if (activeCount === 0) {
+          setDoneModalOpen(true);
+        }
       } catch (error) {
         console.error("챌린지 조회 실패:", error);
       } finally {
@@ -72,25 +91,46 @@ export default function HomeStage() {
 
   const handleStartClick = (stageIndex) => {
     setSelectedStage(stageIndex);
-    setModalOpen(true);
+    setChallengeModalOpen(true);
   };
 
-  const closeModal = () => setModalOpen(false);
+  {/* 일일 챌린지 보상 바 클릭 */}
+  const handleRewardStarClick = async () => {
+    try {
+      await api.post("/v1/members/daily-bonus");
+
+      setRewardModalOpen(true); // 일일 챌린지 완주 모달 열기
+      headerRef.current?.refreshUser();  // 보상 성공 → Header한테 api 갱신 명령
+    } catch (err) {
+      alert(err.response?.data?.detail || "보상 실패!");
+    }
+  };
+
+  {/* 챌린지 리셋 버튼 클릭 */}
+  const handleReset = async () => {
+    try {
+      const res = await api.post("/v1/daily-challenges/today/reset");
+      const data = res.data.data;
+
+      setChallenges(data.dailyChallengesResDtos);
+    } catch (err) {
+      alert("챌린지 리셋 실패!");
+    }
+  };
+
+
+  const closeModal = () => setChallengeModalOpen(false);
 
   if (loading) return <Container><LoadingText>Loading...</LoadingText></Container>;
 
   return (
     <Container>
-      <Header points={100} maxPoints={200} />
+      <Header ref={headerRef} />
       <Content>
-        <MenuContainer>
-          <HomeMenuButton type="location" onClick={() => alert("Coming Soon..!")} />
-          <HomeMenuButton type="community" onClick={() => alert("Coming Soon..!")} />
-          <HomeMenuButton type="setting" onClick={() => alert("Coming Soon..!")} />
-        </MenuContainer>
 
         <RewardBarContainer>
-          <RewardBar completedCount={completedCount} /> {/* ← API에서 바로 받은 값 사용 */}
+          {/*<RewardBar completedCount={completedCount}  onStarClick={handleRewardStarClick}/>  ← API에서 바로 받은 값 사용 */}
+          <RewardBar completedCount={3} onStarClick={handleRewardStarClick}/>
         </RewardBarContainer>
 
         <StageScroll 
@@ -107,13 +147,45 @@ export default function HomeStage() {
           />
         </BtnWrapper>
 
-        {modalOpen && (
+        {challengeModalOpen && (
           <ChallengeModal 
             challenges={challenges} 
             stageIndex={selectedStage} 
             onClose={closeModal} 
+            onReset={handleReset}
           />
         )}
+
+        {rewardModalOpen && <Modal
+          isOpen={rewardModalOpen}
+          title={
+          <>
+            오늘의 챌린지<br /> 완주!
+          </>
+          }
+          icon = {CoinIcn}
+          score="+20"
+          buttons={[
+            { label: "확인", onClick: () => setRewardModalOpen(false) },
+          ]}
+        />}
+
+        {doneModalOpen && (
+          <Modal
+            isOpen={doneModalOpen}
+            title={
+              <>
+                오늘 하루도 고생 많았어요. <br />
+                푹 쉬고 내일도 환경을 <br />
+                보호하러 와주세요!
+              </>
+            }
+            buttons={[
+              { label: "확인", onClick: () => setDoneModalOpen(false) },
+            ]}
+          />
+        )}
+
       </Content>
       <Footer />
     </Container>
@@ -125,18 +197,25 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100%;
   background: linear-gradient(180deg, #43714F 0%, #92C39D 100%);
 `;
 
 const Content = styled.div`
-  /* 화면 전체 높이에서 Header 높이만큼 빼기 */
-  height: calc(100vh - 97px); /* HeaderBar 높이 */
-  padding: 140px 7px 20px;
-  box-sizing: border-box;
-
+  padding-top: 250px;
+  padding-bottom: 150px; // 스테이지 둘 공간 마련
+  margin-top: 90px;
+  margin-bottom: 40px;
   display: flex;
   flex-direction: column;
+
+  overflow-y: auto;   // 여기서 세로 스크롤 넣기
+
+  /* 스크롤바 커스텀: 배경 변하는 효과 제거 */
+  &::-webkit-scrollbar {
+    width: 8px;
+    background: transparent; /* 흰색 배경 대신 투명 */
+  }
 `;
 
 const MenuContainer = styled.div`
@@ -151,7 +230,7 @@ const MenuContainer = styled.div`
 
 const RewardBarContainer = styled.div`
   position: fixed;  /* 화면 기준으로 고정 */
-  left: 48%;      /* 오른쪽 여백 */
+  left: 50%;      /* 오른쪽 여백 */
   top:25%;
   transform: translate(-50%, -50%);
   display: flex;
@@ -165,13 +244,23 @@ const BtnWrapper = styled.div`
   margin-left: 10px;
   z-index: 100;
   width:100px;
+
+  /* 부드러운 변환 */
+  transition: transform 0.2s ease;
+
+  /* 호버/포커스 시 아이콘 애니메이션 */
+  &:hover img,
+  &:focus-visible img {
+    transform: translateY(-3px) scale(1.06);
+  }
 `;
 
 const GotoFarmButton = styled.img`
   width: 90px;
   height: auto;
   cursor: pointer;
-  display: block;
+  position: fixed;
+  bottom: 15%;
 `;
 
 const LoadingText = styled.div`

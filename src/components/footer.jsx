@@ -1,41 +1,32 @@
 import React, { useState } from "react";
 import styled, { css } from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
-import footerImg from "../assets/bottomTab.svg";
-import iconStore from "../assets/icon-store.svg";
-import iconChallenge from "../assets/icon-challenge.svg";
-import leafUpLogo from "../assets/footer-logo.svg";
-import iconRanking from "../assets/icon-ranking.svg";
-import iconFriend from "../assets/icon-friend.svg";
-import farmModal from "../assets/farm-modal.svg";
+import footerImg from "../assets/bottomTab.png";
+import iconStore from "../assets/icon-store.png";
+import iconChallenge from "../assets/icon-challenge.png";
+import leafUpLogo from "../assets/footer-logo.png";
+import iconRanking from "../assets/icon-ranking.png";
+import iconFriend from "../assets/icon-friend.png";
+import farmModal from "../assets/farm-modal.png";
 
 export default function Footer() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [modalOpen, setModalOpen] = useState(false); // 모달 상태 관리
   const [modalMessage, setModalMessage] = useState(""); // 모달 메시지 관리
 
   const items = [
-    { id: "store", label: "가게", icon: iconStore, path: "/store", comingSoon: true },
+    { id: "store", label: "가게", icon: iconStore, path: "/store" },
     { id: "challenge", label: "챌린지", icon: iconChallenge, path: "/challenge" },
-    { id: "home", label: "리프업", icon: leafUpLogo, path: "/home-stage", isHome: true },
-    { id: "ranking", label: "랭킹", icon: iconRanking, path: "/ranking" },
-    { id: "friend", label: "친구", icon: iconFriend, path: "/friends", comingSoon: true },
+    { id: "home", label: "홈", icon: leafUpLogo, path: "/home-stage", isHome: true },
+    { id: "ranking", label: "랭킹", icon: iconRanking, path: "/cumulative-ranking" },
+    { id: "friend", label: "커뮤니티", icon: iconFriend, path: "/community" },
   ];
 
   const handleItemClick = (item) => {
-    if (item.comingSoon) {
-      // Coming Soon 모달 띄우기
-      setModalMessage(`${item.label} Coming Soon..!`);
-      setModalOpen(true);
-    } else {
       // 라우팅
       navigate(item.path);
-    }
-  };
-
-  const closeModal = () => {
-    setModalOpen(false);
   };
 
   return (
@@ -49,6 +40,7 @@ export default function Footer() {
               tabIndex={0}
               aria-label={it.label}
               onClick={() => handleItemClick(it)}
+              className={location.pathname === it.path ? "active" : ""} // 현재 경로면 active 클래스
             >
               {it.isHome ? (
                 <HomeLogo src={it.icon} alt={it.label} draggable={false} />
@@ -79,13 +71,9 @@ export default function Footer() {
 const FooterRoot = styled.footer`
   height: 101px;
   z-index: 1000;
-  width: 100%; /* 100%로 변경: 화면 전체 채우기 */
   max-width: 393px; /* .appContainer와 맞춤: 최대 너비 제한 */
   position: fixed;
   bottom: 0;
-  left: 50%; /* 중앙 정렬: left: 0; -> 50% */
-  transform: translateX(-50%); /* 중앙 정렬 보정 */
-  margin: 0 auto; /* 추가 중앙 정렬 */
 `;
 
 
@@ -107,9 +95,10 @@ const Content = styled.nav`
   grid-template-columns: repeat(5, 1fr);
   align-items: end;
   justify-items: center;
-  padding: 0 12px 10px;
+  margin-bottom: 2%;
   box-sizing: border-box;
-  gap: 14px;
+  gap: 2px;
+  padding-bottom: 6px;
   /* 배경과 정확히 겹치고 싶으면 필요 시 미세 보정값 사용
      transform: translateX(-6px); */
 `;
@@ -129,17 +118,62 @@ const Item = styled.div`
     margin-top: -6px;
   }
 
-  /* 호버/포커스 시 아이콘 애니메이션 */
+  /* 호버/포커스 시 아이콘 그라데이션 섀도우 */
   &:hover img,
   &:focus-visible img {
     transform: translateY(-3px) scale(1.06);
-    filter: brightness(1.06) drop-shadow(0 0 6px rgba(255,213,125,.35));
+    filter: drop-shadow(0 0 30px #FFECBF) drop-shadow(0 3px 0 #382C28);
+  }
+  &.active img {   /* 현재 경로일 때 아이콘 효과 */
+    transform: translateY(-3px) scale(1.06);
+    filter: drop-shadow(0 0 30px #FFECBF) drop-shadow(0 3px 0 #382C28);
   }
 
   /* 클릭 시 눌림 느낌 */
   &:active img {
     transform: translateY(0) scale(0.96);
-    filter: brightness(0.98);
+    filter: drop-shadow(0 0 30px #FFECBF) drop-shadow(0 3px 0 #382C28);
+  }
+
+  /* 호버/포커스 시 텍스트 색상 변경 */
+  &:hover span,
+  &:focus-visible span {
+    text-align: center;
+    font-family: "Maplestory OTF";
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: -0.408px;
+    background: linear-gradient(180deg, #FFBF2B 0%, #FFBE29 0.01%, #FF9D00 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  &.active span {   /* 현재 경로일 때 텍스트 색상 유지 */
+    text-align: center;
+    font-family: "Maplestory OTF";
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: -0.408px;
+    background: linear-gradient(180deg, #FFBF2B 0%, #FFBE29 0.01%, #FF9D00 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* 클릭 시 텍스트 색상 변경 */
+  &:active span {
+    text-align: center;
+    font-family: "Maplestory OTF";
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px;
+    letter-spacing: -0.408px;
+    background: linear-gradient(180deg, #FFBF2B 0%, #FFBE29 0.01%, #FF9D00 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 `;
 
@@ -164,11 +198,12 @@ const baseLabel = css`
 
 const Label = styled.span`
   ${baseLabel}
+  transition: all 0.3s ease;
 `;
 
 /* 일반 아이콘 */
 const Icon = styled.img`
-  width: 55px;
+  width: 67px;
   height: auto;
   margin-bottom: 0px; /* 라벨과 살짝 겹치게 */
   object-fit: contain;

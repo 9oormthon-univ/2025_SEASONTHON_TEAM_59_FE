@@ -2,6 +2,7 @@ import styled from "styled-components";
 import ChallengeItem from "./challengeItem";
 import { useNavigate } from "react-router-dom";
 import { useRef, useState, useEffect } from "react";
+import Modal from "./modal.jsx";
 
 const challengeColors = {
   EASY: { background: "#7CB5A9", border: "#568269" },
@@ -15,21 +16,34 @@ const statusColors = {
   REJECTED: { background: "#a83232", border: "#6e1f1f" },
 };
 
-export default function ChallengeModal({ challenges, stageIndex, onClose }) {
+export default function ChallengeModal({ challenges, stageIndex, onClose, onReset }) {
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedChallenge, setSelectedChallenge] = useState(null);
+  const [showTwoCutModal, setShowTwoCutModal] = useState(false);  // 안내 모달 상태
 
   useEffect(() => {
     const ua = navigator.userAgent;
     setIsMobile(/Android|iPhone|iPad|iPod/i.test(ua));
   }, []);
 
-  const handleClick = (challenge) => {
+  /*const handleClick = (challenge) => {
     if (challenge.challengeStatus !== "ACTIVE") return; // 비활성화된 챌린지는 클릭 금지
     setSelectedChallenge(challenge);
     inputRef.current?.click();
+  };*/
+
+  const handleClick = (challenge) => {
+    if (challenge.challengeStatus !== "ACTIVE") return; // 비활성화된 챌린지는 클릭 금지
+
+    if (challenge.isTwoCut) {
+      setSelectedChallenge(challenge);
+      setShowTwoCutModal(true); // 안내 모달 먼저 띄우기
+    } else {
+      setSelectedChallenge(challenge);
+      inputRef.current?.click();
+    }
   };
 
   const handleFileChange = (e) => {
@@ -57,7 +71,10 @@ export default function ChallengeModal({ challenges, stageIndex, onClose }) {
   return (
     <Overlay onClick={onClose}>
       <ModalWrapper onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>스테이지 {stageIndex} 도전</ModalHeader>
+        <ModalHeaderContainer>
+          <ModalHeader>스테이지 {stageIndex} 도전</ModalHeader>
+          <ResetContainer onClick={onReset}>&</ResetContainer>
+        </ModalHeaderContainer>
 
         <ChallengeList>
           {challenges.map((challenge) => {
@@ -66,6 +83,10 @@ export default function ChallengeModal({ challenges, stageIndex, onClose }) {
               challenge.challengeStatus === "ACTIVE"
                 ? challengeColors[challenge.challengeType]
                 : statusColors[challenge.challengeStatus] || { background: "#999", border: "#666" };
+            
+            // 타입별 포인트 설정
+            const pointsMap = { EASY: 6, MEDIUM: 15, HARD: 50 };
+            const points = pointsMap[challenge.challengeType] ?? 0;    
 
             return (
               <ChallengeButton
@@ -77,10 +98,10 @@ export default function ChallengeModal({ challenges, stageIndex, onClose }) {
                 <ChallengeItem
                   colors={colors}
                   title={challenge.contents}
-                  points={10}
+                  points={points}
                   width="191px"
                   height="49px"
-                  fontSize="12px"
+                  fontSize="10px"
                 />
                 {challenge.challengeStatus === "REJECTED" && (
                   <RejectedLabel>거절됨</RejectedLabel>
@@ -98,6 +119,30 @@ export default function ChallengeModal({ challenges, stageIndex, onClose }) {
           onChange={handleFileChange}
         />
       </ModalWrapper>
+
+      {/* isTwoCut 안내 모달 
+          TODO: 잘되는지 체크 필요 */}
+      {showTwoCutModal && (
+        <Modal
+          isOpen={showTwoCutModal}
+          title="해당 활동은 2번 촬영이 필요합니다"
+          description={`[야외 & 빈 봉투 포함]\n[야외 & 쓰레기를 채운 봉투]`}
+          buttons={[
+            {
+              label: "다음에",
+              onClick: () => setIsModalOpen(false),
+            },
+            {
+              label: "촬영하기",
+              onClick: () => {
+                setShowTwoCutModal(false);  // 모달 닫기
+                inputRef.current?.click();  // 카메라 열기
+              },
+            },
+          ]}
+        />
+      )}
+      
     </Overlay>
   );
 }
@@ -127,20 +172,40 @@ const ModalWrapper = styled.div`
   margin-top: 20px;
   z-index: 9999;
 `;
-
+const ModalHeaderContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+`
 const ModalHeader = styled.div`
-  width: 197px;
+  width: 138px;
   height: 41.887px;
   border-radius: 3px;
   background: linear-gradient(180deg, #5C4D49 0%, #463733 100%);
   color: #FFECBF;
   font-family: "SUITE Variable";
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 8px;
+  margin-bottom: 3px;
+`;
+
+const ResetContainer = styled.div`
+  width: 48px;
+  height: 41.887px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #5C4D49 0%, #463733 100%);
+  color: #FFECBF;
+  font-family: "SUITE Variable";
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 3px;
+  cursor: pointer;
 `;
 
 const ChallengeList = styled.div`
