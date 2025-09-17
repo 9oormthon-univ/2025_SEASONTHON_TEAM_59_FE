@@ -9,6 +9,28 @@ const api = axios.create({
   },
 });
 
+// 🔑 토큰 재발급 요청 함수
+const refreshAccessToken = async () => {
+  try {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) throw new Error("리프레시 토큰 없음");
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_BASE_URL}/v1/oauth2/token/access`,
+      { refreshToken },
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    const newAccessToken = response.data.accessToken;
+    localStorage.setItem("accessToken", newAccessToken);
+    return newAccessToken;
+  } catch (err) {
+    console.error("토큰 갱신 실패 ❌", err);
+    throw err;
+  }
+};
+
+
 // 요청 인터셉터
 api.interceptors.request.use(
   (config) => {
@@ -21,18 +43,62 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 응답 인터셉터 (선택)
+
+// 응답 인터셉터
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 // 토큰 만료 처리, 에러 핸들링 등
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // 토큰 만료 시 처리
-      console.warn("⚠️ 액세스 토큰 만료됨!");
-      // TODO: refreshToken 갱신 로직 추가
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = "Bearer " + token;
+            return api(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const newToken = await refreshAccessToken();
+        processQueue(null, newToken);
+        originalRequest.headers.Authorization = "Bearer " + newToken;
+        return api(originalRequest);
+      } catch (err) {
+        processQueue(err, null);
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
+      }
     }
+
     return Promise.reject(error);
   }
 );
+
 
 export default api;
