@@ -5,9 +5,9 @@ import RejectedImg from "../assets/stage-refuse.png"; // 거절
 import ApprovedImg from "../assets/stage-complete.png"; // 승인
 import BeforeImg from "../assets/stage-idle.png"; // 도전 전
 
-import MasCotEmbrassed from "../assets/mascot-embrassed.png";
+// import MasCotEmbrassed from "../assets/mascot-embrassed.png";
 import MasCotIdle from "../assets/mascot-idle.png";  // 마스코트 기본 표정
-import MasCotHappy from "../assets/mascot-happy.png";
+// import MasCotHappy from "../assets/mascot-happy.png";
 
 import ChoiceBtn from "./choiceBtn.jsx"; // Start 버튼
 
@@ -17,14 +17,8 @@ const STATUS_IMAGES = {
   rejected: RejectedImg,
   approved: ApprovedImg,
 };
-const MASCOT_IMAGES = {
-  idle: MasCotIdle,
-  embarrassed: MasCotEmbrassed,
-  happy: MasCotHappy,
-};
 
-
-export default function Stage({ index, status, hasCharacter, mascotStatus, onStartClick }) {
+export default function Stage({ index, status, hasCharacter, onStartClick }) {
   const onStart = () => {
     console.log("모달 띄우기!!");
   }
@@ -35,7 +29,7 @@ export default function Stage({ index, status, hasCharacter, mascotStatus, onSta
       <StageNumber>{index}</StageNumber>
       {hasCharacter && (
         <>
-          <Character src={MASCOT_IMAGES[mascotStatus]} alt="character" />
+          <Character src={MasCotIdle} alt="character" />
           <StartBtnWrapper>
             <ChoiceBtn onClick={() => onStartClick(index)} width="92px" height="29px">Start</ChoiceBtn>
           </StartBtnWrapper>
@@ -67,7 +61,7 @@ const StageImage = styled.img`
 const StageNumber = styled.div`
   position: absolute;
   top: 60%;
-  left: 40%;
+  left: 45%;
   z-index: 2;
 
   color: #BBB8B1;

@@ -56,27 +56,19 @@ export default function CameraPage() {
     try {
       setIsLoading(true);
       setLoadingMessage("사진을 변환하는 중입니다...");
-      //console.log("📸 photo 상태:", photo?.slice(0, 50) + "..."); // Base64 일부 출력
 
       const blob = base64ToBlob(photo);
-      //console.log("🟢 Blob 변환 완료:", blob);
-
       const formData = new FormData();
       formData.append("multipartFile", blob, "challenge.png"); 
-      //console.log("📦 FormData 준비 완료:", formData);
 
       const uploadRes = await api.post("/v1/images/challenge/upload", formData, {
         headers: { "Content-Type": undefined },
       });
-      //console.log("✅ 업로드 성공:", uploadRes.data);
-
       const imageUrl = uploadRes.data?.data;
       setLoadingMessage("사진을 제출하는 중입니다...");
-      //console.log("🌐 imageUrl:", imageUrl);
 
       if (!imageUrl) {
         alert("이미지 업로드에 실패했습니다.");
-        setIsLoading(false);
         return;
       }
 
@@ -84,20 +76,12 @@ export default function CameraPage() {
         `/v1/daily-challenges/${challenge.id}/submit`,
         { imageUrl }
       );
-      //console.log("🏁 제출 성공:", submitRes.data);
 
       navigate("/home-stage", { state: { imageUrl, challenge } });
 
     } catch (err) {
       console.error("업로드 실패:", err);
-
-      // 🔹 detail 메시지 확인 후 alert
-      const detailMessage = err.response?.data?.detail || "업로드 중 오류가 발생했습니다.";
-      alert(detailMessage);
-    }finally {
-      // 🔹 오류가 나도 항상 로딩 메시지 종료
-      setIsLoading(false);
-      setLoadingMessage("");
+      alert("업로드 중 오류가 발생했습니다.");
     }
   };
 

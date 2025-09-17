@@ -1,7 +1,7 @@
-// header.jsx
-import { useUser } from "../states/userContext";
+//import { useRecoilState, useRecoilValue } from 'recoil'; // 전역 상태관리
+//import { userState } from '../states/userState.js'; // 전역 상태관리
 import styled from "styled-components";
-import { useEffect, useState, forwardRef, useImperativeHandle, useRef } from "react";
+import { useEffect, useState, forwardRef, useImperativeHandle } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileFrame from "../assets/ProfileFrame.png";
 import ProfileEx from "../assets/ProfileEx.png";
@@ -11,73 +11,61 @@ import ProfileIcn from "../assets/ProfileIcn.png";
 import api from "../api/api.js";
 
 const Header = forwardRef(function Header(_, ref) {
-  const { user, updateUser,fetchUser } = useUser(); // Context에서 가져오기
+  //console.log(userState)
+  //const [user, setUser] = useRecoilState(userState);  TODO: 상태관리 Recoil 에러 해결
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [animatedPoints, setAnimatedPoints] = useState(0); // 포인트 애니메이션 값
 
-  const [animatedPoints, setAnimatedPoints] = useState(user?.point ?? 0); // 컨텍스트 값으로 초기화
-  const [isPointBumping, setIsPointBumping] = useState(false); // 포인트 강조용
-  const prevPointsRef = useRef(user?.point ?? 0); // 포인트 변화 추적용 ref
+  const fetchUser = async () => {
+    try {
+      const res = await api.get("/v1/members");
+      console.log("사용자 정보:", res.data.data);
+      setUser(res.data.data);
+    } catch (err) {
+      console.error("사용자 정보 조회 실패:", err);
+    }
+  };
 
-  // 테스트용
+  // ✅ 컴포넌트가 처음 마운트될 때 실행
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  // ✅ 부모에서 ref.current.fetchUser() 호출 가능
   useImperativeHandle(ref, () => ({
     refreshUser: fetchUser,
-    addTestPoints: (amount) => {
-      updateUser({ point: (user.point ?? 0) + amount });
-    },
   }));
 
-  // ✅ 필요 시에만 사용자 정보를 새로고침 (초기 로딩이 되었고 닉네임이 비어있을 때 등)
-  useEffect(() => {
-    if (!user?.nickname) {
-      fetchUser();
-    }
-  }, [user?.nickname]);
-
-  // ✅ 부모에서 ref.current.fetchUser() 호출 할때 쓰는 거
-  /*useImperativeHandle(ref, () => ({
-    refreshUser: fetchUser,
-  }));*/
-
-  // 초기 마운트 시 별도 0 초기화를 하지 않음 (컨텍스트 값으로 초기화됨)
-
-
+  // 🔥 포인트 애니메이션 처리
   useEffect(() => {
     if (!user) return;
+    let start = animatedPoints;
+    let end = user.point ?? 0;
+    if (start === end) return;
 
-    const prevPoints = prevPointsRef.current;
-    const newPoints = user.point ?? 0;
-
-    // 포인트 증가가 없으면 애니메이션 X, 바로 찍기
-    if (newPoints <= prevPoints) {
-      setAnimatedPoints(newPoints);
-      prevPointsRef.current = newPoints;
-      return;
-    }
-
-    // 포인트 증가가 있으면 애니메이션
     let startTime = null;
-    const duration = 800; // ms
+    const duration = 800; // 애니메이션 시간(ms)
+
     const step = (timestamp) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      const currentValue = Math.floor(prevPoints + (newPoints - prevPoints) * progress);
+      const currentValue = Math.floor(start + (end - start) * progress);
       setAnimatedPoints(currentValue);
 
-      // 포인트가 올라가는 동안 잠깐 커지는 효과
-      if (progress < 0.5) setIsPointBumping(true);
-      else setIsPointBumping(false);
-
-      if (progress < 1) requestAnimationFrame(step);
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
     };
 
     requestAnimationFrame(step);
-    prevPointsRef.current = newPoints; // 다음 업데이트를 위해 저장
-  }, [user?.point]);
+  }, [user]);
 
   if (!user) return null; // 데이터 로딩 중일 때 아무것도 렌더링 안 함
 
   //  사용자 관련 정보 추출
-  const points = animatedPoints;
+  //const points = user?.point ?? 0;
+  const points = animatedPoints; // ← 여기서 애니메이션된 값 사용
   const level = user?.level ?? 1;
   const nickname = user?.nickname ?? "사용자";
   const profileImg = user?.picture ?? ProfileEx;
@@ -92,7 +80,7 @@ const Header = forwardRef(function Header(_, ref) {
   const currentXP = points;
   const nextLevelXP = getRequiredXP(level); // 다음 레벨까지 필요한 XP
   const progressPercent = Math.min((currentXP / nextLevelXP) * 100, 100);
-  console.log(`레벨: ${level}, 현재 XP: ${currentXP}, 다음 레벨까지 XP: ${nextLevelXP}, 진행도: ${progressPercent}%`);
+
 
   return (
     <HeaderWrapper>
@@ -197,16 +185,16 @@ const Header = forwardRef(function Header(_, ref) {
               </defs>
             </svg>
           </ProgressBarWrapper>
-          <PointBox id="header-point-box">
+          <PointBox>
             <CoinIcon src={CoinIcn} alt="coin" />
-            <PointText $isBumping={isPointBumping}>{points}</PointText>
+            <PointText>{points}</PointText>
           </PointBox>
         </ProgressContainer>
 
         {/* 프로필 (프레임 + 이미지) */}
         <ProfileWrapper>
           <ProfileFrameImg src={ProfileFrame} alt="frame" />
-          <ProfileImg src={profileImg || ProfileEx} alt="profile" />
+          <ProfileImg src={ProfileEx} alt="profile" />
         </ProfileWrapper>
 
         {/* 프로필 아이콘 */}
@@ -218,7 +206,7 @@ const Header = forwardRef(function Header(_, ref) {
 export default Header;
 
 // Styled Components (기존과 동일)
-const HeaderWrapper = styled.div`position: fixed; z-index:9999;`;
+const HeaderWrapper = styled.div`position: fixed; z-index:99999;`;
 const HeaderBar = styled.div`
   width: 393px;
   height: 97px;
@@ -306,11 +294,6 @@ const PointText = styled.span`
   font-size: 12px;
   font-weight: 900;
   line-height: 22px;
-
-  transition: transform 0.2s ease;
-  transform: ${({ $isBumping }) => ($isBumping ? "scale(1.4)" : "scale(1)")};
-  display: inline-block; // transform 적용 위해 필요
-
 `;
 const CoinIcon = styled.img`width: 17px; height: 16px;`;
 const ProfileWrapper = styled.div`
