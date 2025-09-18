@@ -1,100 +1,112 @@
-.rankingItemContainer {
+import styled from "styled-components";
+import rankBgImage from "../assets/rank-bg.png"; // 이미지 임포트
+
+export const RankingItemContainer = styled.div`
     width: 100%;
     box-sizing: border-box;
-}
+`;
 
-.profileCon {
-    width: 51px;
-    height: 51px;
-}
+export const ProfileCon = styled.div`
+    // 변경: 전체 채우고 뒤로
+    position: absolute;
+    top: 0; // 추가: 컨테이너 상단부터
+    left: 0; // 추가: 컨테이너 왼쪽부터
+    width: 100%; // 추가: 컨테이너 풀 크기 (51px)
+    height: 100%; // 추가: 컨테이너 풀 크기 (51px)
+    z-index: 1; // 낮게: 뒤에 깔림 (테두리만 보이게)
+    border-radius: 50%; // 원형 유지
+`;
 
-.dayStyle {
+export const DayStyle = styled.span`
     font-family: "Maplestory OTF", system-ui, sans-serif;
     position: absolute;
     text-align: center;
     font-weight: 700;
     font-size: 16px;
-    /* 기본(fallback) 색상 — 그라데이션을 지원하지 않는 브라우저에서 사용 */
     color: #ffe8b3;
-    /* Chrome / Safari용 텍스트 투명 처리 (그라데이션 보이게 함) */
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    /* 그라데이션 텍스트 (지원 브라우저에만 적용) */
     background-image: linear-gradient(to bottom, #ffe8b3, #ffc870);
-}
+`;
 
-.rankingFrame {
-    min-height: 57px; /* 적정 최소값 */
-    display: flex; /* 필요 속성 추가 */
+export const RankingFrame = styled.div`
+    min-height: 57px;
+    display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    margin: 4px 26px 4px 8px; /* 상하 4px로 줄임 */
+    margin: 4px 26px 4px 8px;
     width: 360px;
     height: 57px;
     border-radius: 3px;
-    background: linear-gradient(180deg, #fff8e8 0%, #fff8e8 100%); /* 잘못된 var() 제거 */
+    background: linear-gradient(180deg, #fff8e8 0%, #fff8e8 100%);
     box-sizing: border-box;
-}
-
-.starStyle {
-    margin-top: 90%;
+`;
+export const StarStyle = styled.div`
     position: absolute;
+    bottom: -10px; // 추가: 컨테이너 아래 (또는 top: -10px 위로)
+    left: 50%;
+    transform: translateX(-50%); // 수평 중앙
     width: 36px;
     height: 19px;
     z-index: 999;
-}
+`;
 
-.shadow {
+export const Shadow = styled.div`
     width: 284px;
     height: 55px;
     align-items: center;
     display: flex;
+    gap: 10px;
     box-shadow: -1px 0 0 #b29e99, 1px 0 0 #b29e99, 0 1px 0 #b29e99, 0 -2px 0 #b29e99;
-}
+`;
 
-.userInfo {
+export const UserInfo = styled.div`
     display: flex;
     align-items: center;
     text-align: center;
-    justify-content: space-between;
     position: relative;
-}
+`;
 
-.rankContainer {
-    position: relative; /* 자식의 절대 위치 기준 */
+export const RankContainer = styled.div`
+    position: relative;
     width: 76px;
     height: 57px;
-    background: url(../assets/rank-bg.png);
+    background: url(${rankBgImage});
     background-size: cover;
     background-position: center;
-}
-
-.profileImgContainer {
     display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+export const ProfileImgContainer = styled.div`
+    // 변경: relative로 자식 absolute 기준
+    position: relative; // 핵심: absolute 자식들이 이 안에서 위치
     width: 51px;
     height: 51px;
     border-radius: 50%;
+    display: flex;
     align-items: center;
-    justify-content: center;
-    position: absolute;
-    left: 50px;
-}
+    justify-content: center; // flex로 중앙 유지 (absolute 덕에 보조)
+    left: 50px; // UserInfo 안 위치
+`;
 
-.profileImgStyle {
-    border-radius: 50%;
-    width: 40.8px;
-    height: 40.8px;
-    object-fit: cover;
-    position: absolute; /* Use absolute positioning to center it */
+export const ProfileImgStyle = styled.img`
+    // 변경: 중앙 오버랩 강조
+    position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%); /* Center the image */
-    z-index: 99;
-}
+    transform: translate(-50%, -50%); // 중앙 정렬
+    width: 40.8px; // 테두리 안쪽 크기 (테두리 두께 고려)
+    height: 40.8px;
+    border-radius: 50%;
+    object-fit: cover;
+    z-index: 2; // 높게: 앞으로 (프로필 사진 위에)
+`;
 
-.rankStyle {
+export const RankStyle = styled.span`
     font-family: "Maplestory OTF", system-ui, sans-serif;
     position: absolute;
     text-align: center;
@@ -109,30 +121,33 @@
     -webkit-text-fill-color: transparent;
     -webkit-text-stroke-width: 1.5px;
     -webkit-text-stroke-color: #281900;
-    /* 그라데이션 텍스트 (지원 브라우저에만 적용) */
     background-image: linear-gradient(to bottom, #ffe8b3, #ffc870);
-}
+    z-index: 10; /* 스타일 충돌 방지 */
+`;
 
-.nickNameStyle {
-    color: var(--nick-color, #5c4d49); /* 의미있는 변수명 + fallback */
+export const NickNameStyle = styled.span`
+    color: #5c4d49;
     font-family: "SUITE Variable", system-ui, sans-serif;
     font-size: 16px;
     font-style: normal;
     font-weight: 800;
-    line-height: 22px; /* 137.5% */
+    line-height: 22px;
     letter-spacing: -0.408px;
-}
+    margin-left: 40px; /* ProfileImgContainer 너비(51px) + 여유분 */
+    white-space: nowrap; /* 닉네임 한 줄 유지 */
+    max-width: 100px;
+`;
 
-.pointContainer {
+export const PointContainer = styled.div`
     display: flex;
     justify-content: flex-end;
     align-items: center;
     height: 57px;
     position: relative;
     width: 100%;
-}
+`;
 
-.pointStyles {
+export const PointStyles = styled.span`
     color: #7cb29e;
     text-shadow: 0 2px 0 #382c28;
     -webkit-text-stroke: 1px #000;
@@ -141,24 +156,22 @@
     font-weight: 700;
     line-height: 22px;
     letter-spacing: -0.408px;
-    margin-right: 10px; /* leafIcon과 간격 */
-}
+    margin-right: 10px;
+`;
 
-.leafIconStyle {
+export const LeafIconStyle = styled.img`
     width: 23px;
     height: 22px;
     object-fit: cover;
     margin-right: 10px;
     flex-shrink: 0;
-}
+`;
 
-.rankStyleGold {
-    /*1등*/
-    position: absolute; /* 절대 위치 지정 */
-    left: 25px;
-    top: 50%; /* 세로 중앙 */
+export const RankStyleGold = styled.span`
+    position: absolute;
+    left: 20px;
+    top: 50%;
     transform: translate(-50%, -50%);
-    /* 기존 스타일 유지 */
     font-family: "Maplestory OTF", system-ui, sans-serif;
     font-size: 40px;
     color: #ffe8b3;
@@ -166,15 +179,14 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-}
+    z-index: 10; /* 스타일 충돌 방지 */
+`;
 
-.rankStyleSilver {
-    /*2등*/
-    position: absolute; /* 절대 위치 지정 */
-    left: 25px;
-    top: 50%; /* 세로 중앙 */
+export const RankStyleSilver = styled.span`
+    position: absolute;
+    left: 20px;
+    top: 50%;
     transform: translate(-50%, -50%);
-    /* 기존 스타일 유지 */
     font-family: "Maplestory OTF", system-ui, sans-serif;
     font-size: 36px;
     color: #ffe8b3;
@@ -182,15 +194,14 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-}
+    z-index: 10; /* 스타일 충돌 방지 */
+`;
 
-.rankStyleBronze {
-    /* 3등*/
-    position: absolute; /* 절대 위치 지정 */
-    left: 25px;
-    top: 50%; /* 세로 중앙 */
+export const RankStyleBronze = styled.span`
+    position: absolute;
+    left: 20px;
+    top: 50%;
     transform: translate(-50%, -50%);
-    /* 기존 스타일 유지 */
     font-family: "Maplestory OTF", system-ui, sans-serif;
     font-size: 36px;
     color: #ffe8b3;
@@ -198,20 +209,22 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-}
+    z-index: 10; /* 스타일 충돌 방지 */
+`;
 
-@font-face {
+export const FontFace = `
+  @font-face {
     font-family: "SUITE Variable";
     src: url("../fonts/SUITE-Variable-ttf/SUITE-Variable.ttf") format("truetype");
     font-weight: 100 900;
     font-style: normal;
     font-display: swap;
-}
-
-@font-face {
+  }
+  @font-face {
     font-family: "Maplestory OTF";
-    src: url("../fonts/MaplestoryOTFBold/Maplestory OTF Bold.otf") format("opentype");
+    src: url("../fonts/Maplestory-OTF.ttf") format("truetype");
     font-weight: 700;
     font-style: normal;
     font-display: swap;
-}
+  }
+`;

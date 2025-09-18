@@ -1,14 +1,15 @@
-import Header from "../components/dashBoardHeader";
-import Body from "../components/dashBoardBody";
+import React from "react";
+import Header from "../components/dashboard/dashBoardHeader";
+import Body from "../components/dashboard/dashBoardBody";
 import Footer from "../components/footer";
-import "../styles/dashStyle.css";
+import { DashContainer } from "../styles/dashStyles";
 
 export default function CarbonDashBoard() {
-    return (
-        <div className="dashContainer">
-            <Header />
-            <Body />
-            <Footer />
-        </div>
-    );
+  return (
+    <DashContainer>
+      <Header />
+      <Body />
+      <Footer />
+    </DashContainer>
+  );
 }
