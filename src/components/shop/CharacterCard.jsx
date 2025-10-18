@@ -20,7 +20,7 @@ export default function CharacterCard({ name, image, price, disabled, isEquipped
         <CenterImage src={image} alt={name} />
       </ImageViewport>
 
-      <BottomPrice>
+      <BottomPrice $price={price}>
         {price != null ? (
           <PriceText>{price.toLocaleString()}</PriceText>
         ) : (
@@ -94,30 +94,6 @@ const StatusOverlay = styled.div`
   pointer-events: none;
 `;
 
-// const Fill = styled.span`
-//   position: absolute;
-//   top: 6.3%;
-//   left: 31%;
-//   color: #281900;
-//   font-family: "Maplestory OTF";
-//   font-size: 20px;
-//   font-weight: 700;
-//   -webkit-text-stroke: 2px #281900;
-//   z-index: 0;
-// `;
-
-// const Fill2 = styled.span`
-//   position: absolute;
-//   top: 6.1%;
-//   left: 34%;
-//   color: #281900;
-//   font-family: "Maplestory OTF";
-//   font-size: 20px;
-//   font-weight: 700;
-//   -webkit-text-stroke: 2px #281900;
-//   z-index: 0;
-// `;
-
 /* 이미지가 보여질 영역 — 여기가 실제로 '크롭(잘림)'을 담당 */
 const ImageViewport = styled.div`
   position: relative;
@@ -151,7 +127,7 @@ const BottomPrice = styled.div`
   position: relative;
   width: 88px;
   top: -22%;
-  left: 8px;
+  left: ${(p) => (p.$price != null ? "8px" : "0px")};
   height: 24px;
   display: flex;
   align-items: center;

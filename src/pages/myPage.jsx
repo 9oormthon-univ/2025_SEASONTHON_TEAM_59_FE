@@ -110,17 +110,13 @@ export default function MyPage() {
 
   {/* 사용자 별 획득한 업적 불러오기 */}
   const loadAchievements = async () => {
-   setAchievementLoading(true);
-   try {
+    setAchievementLoading(true);
+    try {
+      // 실제 API 호출 (현재 사용 중)
       const achievement = await getClaimedAchievements();
       console.log("내 업적:", achievement);
 
-      // 프론트에서 나머지 슬롯 null로 채우기
-      const filledAchievements = [
-        ...achievement, // 서버에서 받은 업적
-        ...Array(MAX_ACHIEVEMENTS - achievement.length).fill(null),
-      ];
-
+      // 테스트용 더미 데이터
       const dummyAchievements = [
         { id: 1, name: "새싹", description: "회원가입 후 첫 챌린지 승인 완료" },
         { id: 2, name: "개척자 I", description: "스테이지 참여 누적 5회 달성" },
@@ -134,8 +130,24 @@ export default function MyPage() {
         null,
       ];
 
-      setAchievements(dummyAchievements);
-      console.log("채워진 업적:", dummyAchievements);
+      // 업적 단계 필터링 : 같은 종류(접두사)는 가장 높은 단계만 남김
+      const filtered = Object.values(
+        achievement.reduce((acc, ach) => {
+          if (!ach) return acc;
+          const baseName = ach.name.replace(/\s*[ⅠⅡⅢIVV0-9]+$/, ""); // 숫자·로마자 제거
+          acc[baseName] = ach; // 같은 baseName이면 나중(고단계)으로 덮어씀
+          return acc;
+        }, {})
+      );
+
+      // null로 채워서 10개 맞추기
+      const filledAchievements = [
+        ...filtered,
+        ...Array(MAX_ACHIEVEMENTS - filtered.length).fill(null),
+      ];
+
+      setAchievements(filledAchievements);
+      console.log("최종 업적:", filledAchievements);
     } catch (err) {
       alert("업적 정보를 불러오는데 실패했습니다.");
     } finally {

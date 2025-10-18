@@ -156,7 +156,7 @@ const NickName = styled.span`
   font-weight: 800;
   line-height: 22px; /* 137.5% */
   letter-spacing: -0.408px;
-  margin-left:40px;
+  margin-left: 27px;
 `;
 
 const ProfileArea = styled.div`

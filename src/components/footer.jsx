@@ -21,18 +21,10 @@ export default function Footer() {
     { id: "challenge", label: "챌린지", icon: iconChallenge, path: "/challenge" },
     { id: "home", label: "홈", icon: leafUpLogo, path: "/home-stage", isHome: true },
     { id: "ranking", label: "랭킹", icon: iconRanking, path: "/cumulative-ranking" },
-    { id: "friend", label: "커뮤니티", icon: iconFriend, path: "/friends" },
+    { id: "friend", label: "친구", icon: iconFriend, path: "/friends" },
   ];
 
   const handleItemClick = (item) => {
-    // // 커뮤니티 클릭 시 모달
-    // if (item.id === "friend") {
-    //   setModalMessage("아직 준비중입니다!");
-    //   setModalOpen(true);
-    //   return; // 라우팅 막음
-    // }
-
-    // 그 외 라우팅
     navigate(item.path);
   };
 

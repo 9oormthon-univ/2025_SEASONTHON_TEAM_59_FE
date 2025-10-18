@@ -24,8 +24,8 @@ const EffectContainer = styled.div`
   justify-content: space-between;
   /* align-items: center; */
   border-radius: 5px;
-  background: #261B18;
-  box-shadow: 0 4px 0 0 #261B18;
+  background: #382C28;
+  box-shadow: 0 4px 0 0 #382C28;
   margin-bottom: 20px;
 `;
 
