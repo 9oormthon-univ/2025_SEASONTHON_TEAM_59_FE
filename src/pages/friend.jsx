@@ -146,15 +146,6 @@ export default function Friend() {
     };
 
 
-
-
-
-    //TODO: 1. 친구목록만 처음에 불러오고, 다른 것들은 버튼 눌렀을때 불러오기
-    //      2. 친구목록 API 연동
-    //      3. 친구요청 API 연동
-    //      4. 친구검색 API 연동
-    //      5. 친구 찌르기 API 연동
-
     return (
         <Container>
             <Header/>
@@ -201,7 +192,7 @@ export default function Friend() {
                   
                   <SearchAreaWrapper>
                     <SearchInput 
-                      placeholder="닉네임+친구코드로 검색..." 
+                      placeholder="닉네임#4자리" 
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
