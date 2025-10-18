@@ -8,19 +8,10 @@ import api from "./api.js";
 export async function getFriends() {
   try {
     const response = await api.get("/v1/friends");
-    if (response.data.statusCode !== 200) {
-      throw new Error(response.data.message || "친구 목록 조회 실패");
-    }
-    return response.data.data.friendResDtos || [];
+    return response.data.data?.friendResDtos || [];
   } catch (err) {
-    console.error("친구 목록 조회 실패:", err);
-
-    // axios 에러 처리
-    if (err.response && err.response.data && err.response.data.detail) {
-      throw new Error(err.response.data.detail); // 서버 메시지를 그대로 throw
-    }
-
-    throw new Error("친구 조회 중 오류 발생"); // 그 외 일반 에러
+    if (err.response?.data?.detail) throw new Error(err.response.data.detail);
+    throw new Error("친구 목록 조회 중 오류 발생");
   }
 }
 
@@ -34,22 +25,10 @@ export async function searchFriends(nicknameWithCode) {
     const response = await api.get("/v1/friends/search", {
       params: { nicknameWithCode },
     });
-
-    if (response.data.statusCode !== 200) {
-      throw new Error(response.data.message || "친구 검색 실패");
-    }
-
-    // 서버 응답이 단일 객체이므로 그대로 반환
     return response.data.data || null;
   } catch (err) {
-    console.error("친구 검색 실패:", err);
-
-    // axios 에러 처리
-    if (err.response && err.response.data && err.response.data.detail) {
-      throw new Error(err.response.data.detail); // 서버 메시지를 그대로 throw
-    }
-
-    throw new Error("검색 중 오류 발생"); // 그 외 일반 에러
+    if (err.response?.data?.detail) throw new Error(err.response.data.detail);
+    throw new Error("친구 검색 중 오류 발생");
   }
 }
 
@@ -60,19 +39,10 @@ export async function searchFriends(nicknameWithCode) {
 export async function getFriendRequests() {
   try {
     const response = await api.get("/v1/friends/requests");
-    if (response.data.statusCode !== 200) {
-      throw new Error(response.data.message || "친구 요청 조회 실패");
-    }
-    return response.data.data.friendshipResDtos || [];
+    return response.data.data?.friendshipResDtos || [];
   } catch (err) {
-    console.error("친구 요청 조회 실패:", err);
-
-    // axios 에러 처리
-    if (err.response && err.response.data && err.response.data.detail) {
-      throw new Error(err.response.data.detail); // 서버 메시지를 그대로 throw
-    }
-
-    throw new Error("친구 요청 조회 중 오류 발생"); // 그 외 일반 에러
+    if (err.response?.data?.detail) throw new Error(err.response.data.detail);
+    throw new Error("친구 요청 조회 중 오류 발생");
   }
 }
 
@@ -83,19 +53,10 @@ export async function getFriendRequests() {
  */
 export async function sendFriendRequest(nicknameWithCode) {
   try {
-    const response = await api.post("/v1/friends/request", { nicknameWithCode });
-    if (response.data.statusCode !== 200) {
-      throw new Error(response.data.message || "친구 요청 실패");
-    }
+    await api.post("/v1/friends/request", { nicknameWithCode });
   } catch (err) {
-    console.error("친구 요청 실패:", err);
-
-    // axios 에러 처리
-    if (err.response && err.response.data && err.response.data.detail) {
-      throw new Error(err.response.data.detail); // 서버 메시지를 그대로 throw
-    }
-
-    throw new Error("요청 전송 중 오류 발생"); // 그 외 일반 에러
+    if (err.response?.data?.detail) throw new Error(err.response.data.detail);
+    throw new Error("친구 요청 전송 중 오류 발생");
   }
 }
 
@@ -106,19 +67,10 @@ export async function sendFriendRequest(nicknameWithCode) {
  */
 export async function acceptFriendRequest(memberId) {
   try {
-    const response = await api.post(`/v1/friends/requests/${memberId}/accept`);
-    if (response.data.statusCode !== 200) {
-      throw new Error(response.data.message || "친구 요청 수락 실패");
-    }
+    await api.post(`/v1/friends/requests/${memberId}/accept`);
   } catch (err) {
-    console.error("친구요청 수락 실패:", err);
-
-    // axios 에러 처리
-    if (err.response && err.response.data && err.response.data.detail) {
-      throw new Error(err.response.data.detail); // 서버 메시지를 그대로 throw
-    }
-
-    throw new Error("요청 수락 중 오류 발생"); // 그 외 일반 에러
+    if (err.response?.data?.detail) throw new Error(err.response.data.detail);
+    throw new Error("친구 요청 수락 중 오류 발생");
   }
 }
 
@@ -129,19 +81,10 @@ export async function acceptFriendRequest(memberId) {
  */
 export async function rejectFriendRequest(memberId) {
   try {
-    const response = await api.post(`/v1/friends/requests/${memberId}/reject`);
-    if (response.data.statusCode !== 200) {
-      throw new Error(response.data.message || "친구 요청 거절 실패");
-    }
+    await api.post(`/v1/friends/requests/${memberId}/reject`);
   } catch (err) {
-    console.error("친구요청 거절 실패:", err);
-
-    // axios 에러 처리
-    if (err.response && err.response.data && err.response.data.detail) {
-      throw new Error(err.response.data.detail); // 서버 메시지를 그대로 throw
-    }
-
-    throw new Error("요청 거절 중 오류 발생"); // 그 외 일반 에러
+    if (err.response?.data?.detail) throw new Error(err.response.data.detail);
+    throw new Error("친구 요청 거절 중 오류 발생");
   }
 }
 
@@ -153,14 +96,9 @@ export async function rejectFriendRequest(memberId) {
 export async function getFriendDetail(friendId) {
   try {
     const response = await api.get(`/v1/friends/${friendId}`);
-
-    if (response.data.statusCode !== 200) {
-      throw new Error(response.data.message || "친구 상세 조회 실패");
-    }
-
-    return response.data.data; // 단일 친구 객체 반환
+    return response.data.data;
   } catch (err) {
-    console.error("친구 상세 조회 실패:", err);
-    throw err;
+    if (err.response?.data?.detail) throw new Error(err.response.data.detail);
+    throw new Error("친구 상세 조회 중 오류 발생");
   }
 }
