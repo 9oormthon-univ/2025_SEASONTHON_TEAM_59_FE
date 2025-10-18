@@ -21,7 +21,13 @@ export default function CharacterCard({ name, image, price, disabled, isEquipped
       </ImageViewport>
 
       <BottomPrice>
-        <PriceText>{price.toLocaleString()}</PriceText>
+        {price != null ? (
+          <PriceText>{price.toLocaleString()}</PriceText>
+        ) : (
+          <EquippedText $equipped={isEquipped}>
+            {isEquipped ? "장착중" : "장착하기"}
+          </EquippedText>
+        )}
       </BottomPrice>
 
       {/* {disabled && (
@@ -157,7 +163,19 @@ const PriceText = styled.span`
   font-family: "Maplestory OTF";
   font-weight:500;
   font-size: 13px;
-  color: #FFF8E8;
+  color: ${(p) => (p.$equipped ? "#B29E99" : "#FFF8E8")};
+`;
+
+const EquippedText = styled.div`
+  display: inline-block;
+  min-width: 60px;
+  padding: 2px 8px;
+  text-align: center;
+  font-family: "Maplestory OTF";
+  font-weight: 500;
+  font-size: 13px;
+  color: ${(p) => (p.$equipped ? "#B29E99" : "#FFF8E8")};
+  background: linear-gradient(180deg, #5C4D49 0%, #463733 100%);
 `;
 
 const DisabledOverlay = styled.div`

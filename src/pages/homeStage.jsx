@@ -241,7 +241,7 @@ export default function HomeStage() {
                             }}
                             >
                             코인 날리기
-                            </TestButton> */}
+                            </TestButton>*/}
 
                         {/* ✅ 코인 애니메이션 */}
                         {animatingCoins.map((coin) => (
