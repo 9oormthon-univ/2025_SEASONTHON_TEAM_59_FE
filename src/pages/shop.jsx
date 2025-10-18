@@ -19,7 +19,7 @@ import ShopModal from "../components/shop/ShopModal.jsx";
 import api from "../api/api.js";
 import { getShopItems, purchaseAvatar, equipAvatar } from "../api/shopApi.js";
 
-const TABS = ["캐릭터", "캐릭터 스킨", "장신구", "펫", "열매", <>스테이지<br/>스킨</>];
+const TABS = ["캐릭터", "캐릭터 스킨", "장신구", "펫", "열매", "스테이지 스킨"];
 
 export default function ShopPage() {
   const { user, updateUser } = useUser();
