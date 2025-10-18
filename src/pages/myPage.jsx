@@ -121,8 +121,21 @@ export default function MyPage() {
         ...Array(MAX_ACHIEVEMENTS - achievement.length).fill(null),
       ];
 
-      setAchievements(filledAchievements);
-      console.log("채워진 업적:", filledAchievements);
+      const dummyAchievements = [
+        { id: 1, name: "새싹", description: "회원가입 후 첫 챌린지 승인 완료" },
+        { id: 2, name: "개척자 I", description: "스테이지 참여 누적 5회 달성" },
+        { id: 3, name: "리프 콜렉터 I", description: "리프 10개 모으기 달성" },
+        { id: 4, name: "오늘의 수확 I", description: "일일 완주(3/3) 누적 1회 달성" },
+        { id: 5, name: "개척자 II", description: "스테이지 참여 누적 10회 달성" },
+        { id: 6, name: "리프 콜렉터 II", description: "리프 30개 모으기 달성" },
+        { id: 7, name: "오늘의 수확 II", description: "일일 완주(3/3) 누적 3회 달성" },
+        null,
+        null,
+        null,
+      ];
+
+      setAchievements(dummyAchievements);
+      console.log("채워진 업적:", dummyAchievements);
     } catch (err) {
       alert("업적 정보를 불러오는데 실패했습니다.");
     } finally {
@@ -207,7 +220,7 @@ export default function MyPage() {
               <LeafCharacterContainer>
                 <LeafCharacterImg src={user?.avatarUrl} alt="리프업 파트너" />
                 <StageImg src={Stage} alt="스테이지 배경" />
-                <ClosetIcon src={ClosetIcn} alt="옷장 아이콘" />
+                <ClosetIcon src={ClosetIcn} alt="옷장 아이콘" onClick={() => navigate("/closet")} />
               </LeafCharacterContainer>
 
               {/* 캐릭터 정보 */}
@@ -232,12 +245,12 @@ export default function MyPage() {
 
           {/* 업적 섹션 */}
           <ContainerBackGround $height="200px">
-            {/* 업적들을 여기에 나열할건데 한줄에 5씩 보여주고 총 2줄로 보여줄 예정 */}
+            {/* 업적들을 한줄에 5씩 보여주고 총 2줄로 보여줄 예정 */}
             <Title $top={"-19px"} $left={"14px"}>내가 달성한 업적</Title>
             <Grid>
               {achievements.map((ach, idx) => (
                 <AchievementIcon
-                  key={idx}
+                  key={ach?.id ?? `empty-${idx}`}
                   achievement={ach}
                 />
               ))}

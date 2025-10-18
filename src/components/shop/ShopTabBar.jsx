@@ -3,9 +3,9 @@ import styled from "styled-components";
 import clickedBg from "../../assets/clicked.png";
 import unclickedBg from "../../assets/unclicked.png";
 
-export default function ShopTabBar({ tabs = [], activeTab, onChange }) {
+export default function ShopTabBar({ tabs = [], activeTab, onChange}) {
   return (
-    <Root role="tablist" aria-label="상점 카테고리">
+    <>
       {tabs.map((tab) => {
         const isActive = tab === activeTab;
         return (
@@ -16,29 +16,22 @@ export default function ShopTabBar({ tabs = [], activeTab, onChange }) {
             $active={isActive}
             onClick={() => onChange?.(tab)}
           >
-            <Label>{tab}</Label>
+            <Label>
+              {tab.includes(" ") ? (  // 스테이지 스킨을 위한 줄바꿈 처리
+                <>
+                  {tab.split(" ")[0]}<br />
+                  {tab.split(" ")[1]}
+                </>
+              ) : (
+                tab
+              )}
+            </Label>
           </TabButton>
         );
       })}
-    </Root>
+    </>
   );
 }
-
-const Root = styled.div`
-  position: fixed;
-  top: 5.5%; /* RoofBar와 맞닿게 배치할 경우 조정 가능 */
-  left: 50%;
-  transform: translate(-50%, 128px); /* 지붕(120px) 아래로 내림 + 여백 8px */
-  width: 100%;
-  max-width: 390px;
-  height: 75px;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 0; /* 6개가 붙어 보이도록 간격 제거 */
-  background: #261B18; /* 탭 영역 배경색 */
-  padding: 0px 3px 0px 3px;
-  z-index: 999;
-`;
 
 const TabButton = styled.button`
   appearance: none;

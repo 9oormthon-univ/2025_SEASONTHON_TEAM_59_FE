@@ -84,11 +84,13 @@ export default function ShopPage() {
     <PageRoot>
       <ContentArea>
         <RoofBar leafCount={user.point ?? 0} />
-        <ShopTabBar
-          tabs={TABS}
-          activeTab={activeTab}
-          onChange={setActiveTab}
-        />
+        <ShopTabBarRoot>
+          <ShopTabBar
+            tabs={TABS}
+            activeTab={activeTab}
+            onChange={setActiveTab}
+          />
+        </ShopTabBarRoot>
 
         {loading ? (
           <Placeholder>로딩 중...</Placeholder>
@@ -183,6 +185,22 @@ const PageRoot = styled.div`
   position: relative;
   min-height: 100%;
   background: #5C4D49; /* 화면 내부 배경색 */
+`;
+
+const ShopTabBarRoot = styled.div`
+  position: fixed;
+  top: 5.5%; /* RoofBar와 맞닿게 배치할 경우 조정 가능 */
+  left: 50%;
+  transform: translate(-50%, 128px); /* 지붕(120px) 아래로 내림 + 여백 8px */
+  width: 100%;
+  max-width: 390px;
+  height: 75px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0; /* 6개가 붙어 보이도록 간격 제거 */
+  background: #261B18; /* 탭 영역 배경색 */
+  padding: 0px 3px 0px 3px;
+  z-index: 999;
 `;
 
 const ContentArea = styled.div`
