@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 import Header from "../components/header.jsx";
 import Footer from "../components/footer.jsx";
-import ThreeItemNav from "../components/ThreeItemNav.jsx";
+import ThreeItemNav from "../components/threeItemNav.jsx";
 import FreindItem from "../components/friendItem.jsx";
 
 import MascotIdle from "../assets/mascot-idle.png";
