@@ -11,26 +11,31 @@ import Beginner from "../../assets/achievement/Icon-beginner.png";
 
 // 업적 타입별 이미지 매핑
 const achievementImages = {
-  seed: Brown, // 새싹, 오늘의 수확
-  pioneer: Silver, // 개척자 시리즈
-  leafCollector: Purple, // 리프 콜렉터
-};
-// 칭호 스타일 매핑
-const titleStyles = {
-  seed: {
-    color: "#FFECBF",
-  },
-  pioneer: {
-    color: "#898989",
-  },
-  leafCollector: {
-    color: "#3F416E",
-  },
+  seed: Brown,
+  pioneer: Silver,
+  leafCollector: Purple,
 };
 
-export default function AchievementIcon({ achievement }) {
+// 칭호 스타일 매핑
+const titleStyles = {
+  seed: { color: "#FFECBF" },
+  pioneer: { color: "#898989" },
+  leafCollector: { color: "#3F416E" },
+};
+
+export default function AchievementIcon({ achievement, iconSize, titleSize }) {
+  const iSize = iconSize ?? 61;
+  const bSize = iconSize ? 70 : 100;
+  const tSize = titleSize ?? 8;
+
   // null 체크
-  if (!achievement) return <EmptyAchievement />;
+  if (!achievement || !achievement.name) {
+    return (
+      <AchievementWrapper>
+        <EmptyAchievement $size={iSize} />
+      </AchievementWrapper>
+    );
+  }
 
   // 업적 타입 결정
   let type = "seed";
@@ -44,64 +49,69 @@ export default function AchievementIcon({ achievement }) {
 
   return (
     <AchievementWrapper>
-      <Icon src={icon} alt={achievement.name} />
+      <Icon src={icon} alt={achievement.name} $size={iSize} />
 
-      <ImageWrapper>
-        <Image src={achievementImages[type]} alt={achievement.name} />
-        <BadgeTitle $type={type}>{achievement.name}</BadgeTitle>
+      <ImageWrapper $size={tSize}>
+        <Image src={achievementImages[type]} alt={achievement.name} $size={bSize} />
+        <BadgeTitle $type={type} $size={tSize}>
+          {achievement.name}
+        </BadgeTitle>
       </ImageWrapper>
     </AchievementWrapper>
   );
 }
 
+/* ---------------- styled-components ---------------- */
 
 const AchievementWrapper = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 4px; /* 아이콘과 텍스트 간격 */
+  gap: 4px;
 `;
 
 const Icon = styled.img`
-  width: 61px;
-  height: 61px;
+  width: ${({ $size }) => $size}px;
+  height: ${({ $size }) => $size}px;
   border-radius: 50%;
   border: 3px solid #382C28;
   object-fit: cover;
 `;
 
 const EmptyAchievement = styled.div`
-  width: 61px;
-  height: 61px;
+  width: ${({ $size }) => $size}px;
+  height: ${({ $size }) => $size}px;
   flex-shrink: 0;
-  border-radius: 61px;
+  border-radius: 50%;
   border: 3px solid #382C28;
   background: #5C4D49;
 `;
 
 const ImageWrapper = styled.div`
   position: absolute;
-  top: 31%;
+  top: 65%;
+  left: ${({$size}) => $size == 8 ? '6%' : '15%'};
   width: 50px;
   height: 22px;
 `;
 
 const Image = styled.img`
-  width: 100%;
-  height: 100%;
+  width: ${({ $size }) => $size}%;
+  height: ${({ $size }) => $size}%;
   object-fit: contain;
 `;
 
 const BadgeTitle = styled.div`
   position: absolute;
-  top: -6%;
-  left: 0;
+  top: ${({$size}) => $size == 8 ? '-6%' : '-16%'};
+  left: ${({$size}) => $size == 8 ? '0%' : '-13%'};
   width: 100%;
   text-align: center;
 
   font-family: "SUITE Variable";
-  font-size: 8px;
+  font-size: ${({ $size }) => $size}px;
   font-style: normal;
   font-weight: 800;
   line-height: 22px; /* 275% */

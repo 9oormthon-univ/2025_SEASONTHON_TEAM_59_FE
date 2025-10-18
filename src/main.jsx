@@ -34,6 +34,8 @@ import RegionalRankingPage from "./pages/regionalRanking.jsx"
 import StreakRankingPage from "./pages/streakRanking.jsx"
 import CarbonDashBoard from './pages/carbonDashBoard.jsx';
 import ShopPage from './pages/shop.jsx';
+import ClosetPage from './pages/closet.jsx';
+import Friend from './pages/friend.jsx';
 
 // ✅ 서비스워커 등록 (렌더 전에 실행)
 registerSW({ immediate: true });
@@ -75,6 +77,12 @@ createRoot(document.getElementById('root')).render(
 
           {/* 상점 */}
           <Route path="/store" element={<ProtectedRoute><ShopPage /></ProtectedRoute>} />
+
+          {/* 옷장 */}
+          <Route path="/closet" element={<ProtectedRoute><ClosetPage /></ProtectedRoute>} />
+
+          {/* 커뮤니티 */}
+          <Route path="/friends" element={<ProtectedRoute><Friend /></ProtectedRoute>} />
 
         </Routes>
       </BrowserRouter>
