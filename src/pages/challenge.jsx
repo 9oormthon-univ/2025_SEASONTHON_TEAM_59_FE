@@ -220,12 +220,12 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100%;
 `;
 
 const Content = styled.div`
   height: calc(100vh - 95px);
-  padding: 140px 7px 10px;
+  padding: 250px 7px 10px;
   margin-bottom: 135px;
   box-sizing: border-box;
   display: flex;
