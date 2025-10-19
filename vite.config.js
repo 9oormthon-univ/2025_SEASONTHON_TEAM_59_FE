@@ -62,8 +62,8 @@ export default defineConfig({
     port: 5173,
     allowedHosts: [
       "be00b60b65bd.ngrok-free.app",
-      "634762697c8c.ngrok-free.app",
-      "6e1f8ff5a132.ngrok-free.app"
+      "69d39eb09239.ngrok-free.app",
+      "84af91043a2a.ngrok-free.app"
     ],
     proxy: {
       "/api": {
