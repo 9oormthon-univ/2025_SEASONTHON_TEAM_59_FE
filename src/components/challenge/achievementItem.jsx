@@ -55,7 +55,8 @@ export default function AchievementItem({ achievement, onClick }) {
 
 // Styled Components
 const ItemWrapper = styled.div`
-  width: ${({ $width }) => $width || "370px"};
+  width: 100%;
+  max-width: ${({ $width }) => $width || "370px"};
   height: ${({ $height }) => $height || "49px"};
   flex-shrink: 0;
   border-radius: 3px;

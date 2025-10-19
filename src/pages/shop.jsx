@@ -204,9 +204,8 @@ const ShopTabBarRoot = styled.div`
 `;
 
 const ContentArea = styled.div`
-  padding: 12px 16px 0 16px;
-  padding-top: 65%; /* fixed 헤더 여백 */
-  padding-bottom: 220px; /* 푸터 + 고정 Roof/탭 여유 공간 확보 */
+  padding-top: 65%;
+  height: calc(100vh - 250px);
 `;
 
 const Placeholder = styled.div`
