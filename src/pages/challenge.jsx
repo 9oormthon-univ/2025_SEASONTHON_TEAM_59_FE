@@ -224,23 +224,25 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-  /* 화면 전체 높이에서 Header 높이만큼 빼기 */
-  height: calc(100vh - 50px); /* HeaderBar 높이 */
+  height: calc(100vh - 95px);
   padding: 140px 7px 10px;
+  margin-bottom: 135px;
   box-sizing: border-box;
-
   display: flex;
   flex-direction: column;
 `;
 
 const ToggleContainer = styled.div`
   margin-bottom: 8px;
-  margin-left: 190px
+  display: flex;
+  justify-content: end;
 `;
 
 const ChallengeContainer = styled.div`
-  width: 378px;
-  height: 480px;
+  width: 100%;
+  max-width: 378px;
+  height: 100%;
+  max-height: 480px;
   flex-shrink: 0;
   border-radius: 3px;
   border: 2px solid #382C28;
@@ -253,7 +255,8 @@ const ChallengeContainer = styled.div`
 `;
 
 const ChallengeLevelContainer = styled.div`
-  width: 372.155px;
+  width: 100%;
+  max-width: 372.155px;
   height: 45px;
   flex-shrink: 0;
   border-radius: 3px;
