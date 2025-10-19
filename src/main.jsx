@@ -37,15 +37,9 @@ import ShopPage from './pages/shop.jsx';
 import ClosetPage from './pages/closet.jsx';
 import Friend from './pages/friend.jsx';
 
-// main.jsx 상단 (import 뒤)
-function setVh() {
-  document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
-}
-setVh();
-window.addEventListener('resize', setVh);
-
-// ✅ 서비스워커 등록 (렌더 전에 실행)
+// ✅ PWA 등록
 registerSW({ immediate: true });
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
