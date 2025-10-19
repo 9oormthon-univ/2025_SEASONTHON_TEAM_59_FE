@@ -40,14 +40,6 @@ import Friend from './pages/friend.jsx';
 // ✅ PWA 등록
 registerSW({ immediate: true });
 
-// 모바일 vh 업데이트 (주소창/하단바 반영)
-function updateVh() {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
-}
-window.addEventListener('resize', updateVh);
-updateVh();
-
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
