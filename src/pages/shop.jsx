@@ -204,7 +204,7 @@ const ShopTabBarRoot = styled.div`
 `;
 
 const ContentArea = styled.div`
-  padding-top: 65%;
+  padding-top: 300px;
   height: calc(100vh - 250px);
 `;
 
