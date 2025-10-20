@@ -51,8 +51,8 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <UserProvider>
       <BrowserRouter>
-        {/* ⬇️ 주소창/툴바 대응 변수 세팅 */}
-        <ViewportSetter />
+        {/* ⬇️ 주소창/툴바 대응 변수 세팅
+        <ViewportSetter />*/}
         <Routes>
           {/* 로그인 관련 */}
           <Route path="/" element={<PublicRoute><LoginMain /></PublicRoute>} />
