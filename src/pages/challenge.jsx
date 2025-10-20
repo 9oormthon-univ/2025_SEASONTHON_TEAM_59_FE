@@ -225,7 +225,7 @@ const Container = styled.div`
 
 const Content = styled.div`
   height: calc(100vh - 95px);
-  padding: 250px 7px 10px;
+  padding: 210px 7px 10px;
   margin-bottom: 135px;
   box-sizing: border-box;
   display: flex;
