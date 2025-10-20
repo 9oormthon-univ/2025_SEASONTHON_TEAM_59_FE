@@ -600,6 +600,6 @@ const Logout = styled.div`
   -webkit-text-fill-color: transparent;
   cursor: pointer;
   margin-top: 20px;
-  margin-bottom: 60px;
+  margin-bottom: 90px;
   padding-bottom: 30px;
 `;

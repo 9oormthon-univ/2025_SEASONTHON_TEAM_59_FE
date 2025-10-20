@@ -622,7 +622,7 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-  padding: 140px 20px 20px;     /* 동일한 상단 패딩 */
+  padding: 220px 20px 20px;     /* 동일한 상단 패딩 */
   margin-bottom: 60px;
   box-sizing: border-box;
   display: flex;
