@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import { ProtectedRoute, PublicRoute, NicknameRoute } from "./routes/protectedRoutes";
 import { registerSW } from "virtual:pwa-register";  // PWA
 import { UserProvider } from "./states/userContext";
+import { useViewportHeight } from "./hooks/useViewportHeight";
 
 import './index.css'
 import App from './App.jsx'
@@ -40,11 +41,18 @@ import Friend from './pages/friend.jsx';
 // ✅ PWA 등록
 registerSW({ immediate: true });
 
+// ✅ ViewportHeightUpdater: 모바일 주소창/툴바 반영
+function ViewportSetter() {
+  useViewportHeight();
+  return null;
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <UserProvider>
       <BrowserRouter>
+        {/* ⬇️ 주소창/툴바 대응 변수 세팅 */}
+        <ViewportSetter />
         <Routes>
           {/* 로그인 관련 */}
           <Route path="/" element={<PublicRoute><LoginMain /></PublicRoute>} />
