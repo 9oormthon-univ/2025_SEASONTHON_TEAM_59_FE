@@ -172,7 +172,7 @@ const ModalWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 2px;
-  margin-top: 110px;
+  margin-top: 160px;
   z-index: 9999;
 `;
 const ModalHeaderContainer = styled.div`
