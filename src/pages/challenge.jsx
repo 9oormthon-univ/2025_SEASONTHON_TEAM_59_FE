@@ -290,7 +290,7 @@ const ChallengeListContainer = styled.div`
 
 const LoadingText = styled.div`
   position: absolute;
-  top: 55%;
+  top: 70%;
   left: 50%;
   transform: translate(-50%, -50%); /* 완전 중앙 정렬 */
 

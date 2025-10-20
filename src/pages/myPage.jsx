@@ -601,4 +601,5 @@ const Logout = styled.div`
   cursor: pointer;
   margin-top: 20px;
   margin-bottom: 60px;
+  padding-bottom: 30px;
 `;
