@@ -214,7 +214,6 @@ const HeaderWrapper = styled.div`position: fixed; z-index:9999;`;
 const HeaderBar = styled.div`
     width: 393px;
     height: calc(97px + env(safe-area-inset-top));
-    padding-top: env(safe-area-inset-top);
     flex-shrink: 0;
     border-bottom: 3px solid #382c28;
     background: #5c4d49;
