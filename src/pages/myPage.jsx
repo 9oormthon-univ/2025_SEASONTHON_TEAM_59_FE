@@ -132,7 +132,7 @@ export default function MyPage() {
 
       // 업적 단계 필터링 : 같은 종류(접두사)는 가장 높은 단계만 남김
       const filtered = Object.values(
-        dummyAchievements.reduce((acc, ach) => {
+        achievement.reduce((acc, ach) => {
           if (!ach) return acc;
           const baseName = ach.name.replace(/\s*[ⅠⅡⅢIVV0-9]+$/, ""); // 숫자·로마자 제거
           acc[baseName] = ach; // 같은 baseName이면 나중(고단계)으로 덮어씀
