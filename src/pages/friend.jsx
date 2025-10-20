@@ -269,7 +269,7 @@ const Container = styled.div`
 `;
 
 const Content = styled.div`
-  padding-top: 100px;
+  padding-top: 130px;
   padding-bottom: 40px;
   margin-top: 110px;
   margin-bottom: 40px;
