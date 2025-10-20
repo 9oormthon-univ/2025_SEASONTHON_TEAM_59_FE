@@ -213,13 +213,15 @@ export default Header;
 const HeaderWrapper = styled.div`position: fixed; z-index:9999;`;
 const HeaderBar = styled.div`
     width: 393px;
-    height: 97px;
+    height: calc(97px + env(safe-area-inset-top));
+    padding-top: env(safe-area-inset-top);
     flex-shrink: 0;
     border-bottom: 3px solid #382c28;
     background: #5c4d49;
     box-shadow: 0 3px 0 0 #382c28;
     position: relative;
 `;
+
 const LevelText = styled.div`
     position: absolute;
     margin-top: 46px;
