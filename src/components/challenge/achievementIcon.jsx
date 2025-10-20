@@ -5,10 +5,11 @@ import Brown from "../../assets/achievement/achieveBrown.png";
 import Purple from "../../assets/achievement/achievePurple.png";
 import Silver from "../../assets/achievement/achieveSilver.png";
 
-import TodayHarvest from "../../assets/achievement/Icon-todayHarvest.png";
+import Gardner from "../../assets/achievement/Icon-gardner.png";
 import Pioneer from "../../assets/achievement/Icon-pioneer1.png";
 import Beginner from "../../assets/achievement/Icon-beginner.png";
 import Collector from "../../assets/achievement/Icon-collector.png";
+import TreasureHunter from "../../assets/achievement/Icon-treasureHunter.png";
 
 // 업적 타입별 이미지 매핑
 const achievementImages = {
@@ -46,8 +47,9 @@ export default function AchievementIcon({ achievement, iconSize, titleSize }) {
   // 업적 아이콘 결정
   let icon = Beginner;
   if (achievement.name.includes("개척자")) icon = Pioneer;
-  else if (achievement.name.includes("오늘의 수확")) icon = TodayHarvest;
+  else if (achievement.name.includes("정원사")) icon = Gardner;
   else if (achievement.name.includes("리프 콜렉터")) icon = Collector;
+  else if (achievement.name.includes("보물 사냥꾼")) icon = TreasureHunter;
 
   return (
     <AchievementWrapper>

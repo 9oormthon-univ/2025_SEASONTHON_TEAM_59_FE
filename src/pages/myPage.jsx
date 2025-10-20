@@ -121,10 +121,10 @@ export default function MyPage() {
         { id: 1, name: "새싹", description: "회원가입 후 첫 챌린지 승인 완료" },
         { id: 2, name: "개척자 I", description: "스테이지 참여 누적 5회 달성" },
         { id: 3, name: "리프 콜렉터 I", description: "리프 10개 모으기 달성" },
-        { id: 4, name: "오늘의 수확 I", description: "일일 완주(3/3) 누적 1회 달성" },
-        { id: 5, name: "개척자 II", description: "스테이지 참여 누적 10회 달성" },
-        { id: 6, name: "리프 콜렉터 II", description: "리프 30개 모으기 달성" },
-        { id: 7, name: "오늘의 수확 II", description: "일일 완주(3/3) 누적 3회 달성" },
+        { id: 4, name: "정원사 I", description: "일일 완주(3/3) 누적 1회 달성" },
+        { id: 5, name: "보물 사냥꾼 I", description: "스테이지 참여 누적 10회 달성" },
+        { id: 6, name: "보물 사냥꾼 II", description: "리프 30개 모으기 달성" },
+        { id: 7, name: "정원사 II", description: "일일 완주(3/3) 누적 3회 달성" },
         null,
         null,
         null,
@@ -132,7 +132,7 @@ export default function MyPage() {
 
       // 업적 단계 필터링 : 같은 종류(접두사)는 가장 높은 단계만 남김
       const filtered = Object.values(
-        achievement.reduce((acc, ach) => {
+        dummyAchievements.reduce((acc, ach) => {
           if (!ach) return acc;
           const baseName = ach.name.replace(/\s*[ⅠⅡⅢIVV0-9]+$/, ""); // 숫자·로마자 제거
           acc[baseName] = ach; // 같은 baseName이면 나중(고단계)으로 덮어씀
