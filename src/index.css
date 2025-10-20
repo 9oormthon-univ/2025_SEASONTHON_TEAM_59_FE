@@ -50,6 +50,7 @@ body {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   overflow-y: auto; /* 스크롤 허용 */
   background-color: #f0f0f0;
+  height: calc(var(--vh) * 100);
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -60,7 +61,8 @@ body {
 #root {
   width: 100%;
   max-width: 390px; /* iPhone 14 기준 */
-  height: 100vh; /* 모바일에서는 꽉 차게 */
+  /* height: 100vh; 모바일에서는 꽉 차게 */
+  height: calc(var(--vh) * 100);
   min-height: calc(var(--vh, 1vh) * 100);
   background-color: #FFF8E8;
   overflow-y: auto; /* ✅ 내부 스크롤 허용 */
