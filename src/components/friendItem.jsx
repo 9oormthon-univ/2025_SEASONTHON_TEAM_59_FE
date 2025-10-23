@@ -148,7 +148,6 @@ const TextInfo = styled.div`
 `;
 
 const LevelText = styled.span`
-  text-align: center;
   -webkit-text-stroke-width: 1px;
   -webkit-text-stroke-color: #281900;
   font-family: "Titan One";
