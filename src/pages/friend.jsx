@@ -71,6 +71,8 @@ export default function Friend() {
     const fetchFriendRequests = async () => {
       try {
         const data = await getFriendRequests();
+        console.log("fetched friendRequests:", data); // <<-- 응답 구조 확인용
+        // 응답 배열을 그대로 set (각 항목이 friendshipId를 포함해야 함)
         setFriendRequests(data);
       } catch (err) {
         setFriendRequests([]);
@@ -112,13 +114,13 @@ export default function Friend() {
 
     // 친구 요청 수락 / 거절
     const handleAction = async (f, type) => {
-      setActionLoadingId(f.memberId);
+      setActionLoadingId(f.friendshipId);
       try {
         if (type === "accept") {
-          await acceptFriendRequest(f.memberId);
+          await acceptFriendRequest(f.friendshipId);
           alert(`${f.nickname}님 요청 수락`);
         } else {
-          await rejectFriendRequest(f.memberId);
+          await rejectFriendRequest(f.friendshipId);
           alert(`${f.nickname}님 요청 거절`);
         }
         await fetchFriendRequests();
@@ -230,20 +232,20 @@ export default function Friend() {
                     ) : (
                       friendRequests.map((friend) => (
                         <FreindItem
-                          key={friend.memberId}
+                          key={friend.friendshipId}
                           friend={friend}
                           buttons={[
                             {
                               label:
-                                actionLoadingId === friend.memberId ? "처리 중..." : "수락",
+                                actionLoadingId === friend.friendshipId ? "처리 중..." : "수락",
                               onClick: () => handleAction(friend, "accept"),
-                              disabled: actionLoadingId === friend.memberId,
+                              disabled: actionLoadingId === friend.friendshipId,
                             },
                             {
                               label:
-                                actionLoadingId === friend.memberId ? "처리 중..." : "거절",
+                                actionLoadingId === friend.friendshipId ? "처리 중..." : "거절",
                               onClick: () => handleAction(friend, "reject"),
-                              disabled: actionLoadingId === friend.memberId,
+                              disabled: actionLoadingId === friend.friendshipId,
                             },
                           ]}
                         />
