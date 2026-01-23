@@ -12,21 +12,25 @@ export default function GoogleAuth() {
   const { updateUser } = useUser();
   const processedRef = useRef(false);
 
-
   useEffect(() => {
-    if (processedRef.current) return; // 이미 처리된 경우(크롬 콜백 중복 호출 방지)
-    processedRef.current = true;
+    // 1. 중복 실행 방지 가드
+    if (processedRef.current) return;
 
-    const code = searchParams.get("code"); // URL에서 ?code=값 추출
+    const code = searchParams.get("code");
     if (!code) {
       alert("인가 코드가 존재하지 않습니다.");
       navigate("/login");
       return;
     }
 
+    processedRef.current = true;
+
+    // 2. URL 파라미터 즉시 제거
+    // +) searchParams를 의존성 배열에서 제거
+    window.history.replaceState({}, null, window.location.pathname);
+
     const fetchToken = async () => {
       try {
-
         const res = await api.get(
           `/v1/oauth2/callback/${provider}?code=${code}`
         );
@@ -44,28 +48,26 @@ export default function GoogleAuth() {
           point: memberInfo.point,
         });
 
-        // 로컬 스토리지나 상태 관리 라이브러리에 저장
-        // TODO: 어디에 저장할지 확정
+        // 토큰 저장
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
 
         // 닉네임 페이지로 이동
-        navigate("/login/nick");
+        navigate("/login/nick", { replace: true });
       } catch (err) {
-        console.error(err);
+        console.error("구글 로그인 에러:", err);
         alert("로그인 처리 중 오류가 발생했습니다.");
-        navigate("/login");
-      } finally {
-        processedRef.current = false; // 재시도 가능
+        navigate("/login", { replace: true });
       }
     };
 
     fetchToken();
-  }, [provider, searchParams, navigate]);
+    
+    // 3. ✨ 의존성 배열에서 searchParams와 provider 제거
+    // navigate와 updateUser만 남겨서 URL 변경에 의한 재실행을 원천 차단
+  }, [navigate, updateUser]);
 
-  return (
-    <LoginMessage>{loadingMessage}</LoginMessage>
-  );
+  return <LoginMessage>{loadingMessage}</LoginMessage>;
 }
 
 const LoginMessage = styled.div`
@@ -73,12 +75,9 @@ const LoginMessage = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-
   color: #382C28;
   text-align: center;
   font-family: "Maplestory OTF";
   font-size: 30px;
-  font-style: normal;
   font-weight: 700;
-  line-height: normal;
 `;

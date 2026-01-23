@@ -10,6 +10,7 @@ export default function CameraMain() {
   useEffect(() => {
     const ua = navigator.userAgent;
     setIsMobile(/Android|iPhone|iPad|iPod/i.test(ua));
+    console.log(isMobile);
   }, []);
 
   const openCamera = () => {
